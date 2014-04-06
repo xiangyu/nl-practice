@@ -18,11 +18,18 @@ public class Posterior {
 	List<Double> semi_marginal;
 	for (int m = 0; m < model.node_N1; ++m) {
 	    semi_marginal = new ArrayList<Double>(model.node_N2);
-	    this.semi_marginals1.set(m, semi_marginal);
+	    for (int n = 0; n < model.node_N2; ++n) {
+		semi_marginal.add(0.0);
+	    }
+	    this.semi_marginals1.add(semi_marginal);
 	}
+
 	for (int k = 0; k < model.c_N1; ++k) {
 	    semi_marginal = new ArrayList<Double>(model.c_N2);
-	    this.semi_marginals2.set(k, semi_marginal);
+	    for (int l = 0; l < model.c_N2; ++l) {
+		semi_marginal.add(0.0);
+	    }
+	    this.semi_marginals2.add(semi_marginal);
 	}
 	this.update_model(model);
     }
@@ -71,16 +78,16 @@ public class Posterior {
     private void update_priors(Model model) {
 	double nmlz = 1.0 / model.node_N1 * model.node_N2;
 	double sum;
-	for (int k = 0; k < model.node_N1; ++k) {
+	for (int k = 0; k < model.c_N1; ++k) {
 	    sum = 0.0;
-	    for (int l = 0; l < model.node_N2; ++l) {
+	    for (int l = 0; l < model.c_N2; ++l) {
 		sum += this.semi_marginals2.get(k).get(l);
 	    }
 	    model.priors1.set(k, sum * nmlz);
 	}
-	for (int l = 0; l < model.node_N2; ++l) {
+	for (int l = 0; l < model.c_N2; ++l) {
 	    sum = 0.0;
-	    for (int k = 0; k < model.node_N1; ++k) {
+	    for (int k = 0; k < model.c_N1; ++k) {
 		sum += this.semi_marginals2.get(k).get(l);
 	    }
 	    model.priors2.set(l, sum * nmlz);
@@ -96,7 +103,7 @@ public class Posterior {
 		for (int m = 0; m < model.node_N1; ++m) {
 		    inner_sum = 0.0;
 		    for (int n = 0; n < model.node_N2; ++n) {
-			prob = model.calc_joint_prob(m, n, k, l) / this.semi_marginal1.get(m).get(n);
+			prob = model.calc_joint_prob(m, n, k, l) / this.semi_marginals1.get(m).get(n);
 			inner_sum += prob * model.weights.get(m).get(n);
 		    }
 		    outer_sum += inner_sum;
@@ -117,13 +124,13 @@ public class Posterior {
 		for (int m = 0; m < model.node_N1; ++m) {
 		    inner_sum = 0.0;
 		    for (int n = 0; n < model.node_N2; ++n) {
-			prob = model.calc_joint_Prob(m, n, k, l) / this.semi_marginal1.get(m).get(n);
-			diff = model.weights.get(m).get(n) - model.means.get(m).get(n);
+			prob = model.calc_joint_prob(m, n, k, l) / this.semi_marginals1.get(m).get(n);
+			diff = model.weights.get(m).get(n) - model.means.get(k).get(l);
 			inner_sum += prob * diff * diff;
 		    }
 		    outer_sum += inner_sum;
 		}
-		model.variances.get(k).set(l, outer_sum / this.marginals2.get(k).get(l));
+		model.variances.get(k).set(l, outer_sum / this.semi_marginals2.get(k).get(l));
 	    }
 	}
     }
