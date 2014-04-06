@@ -1,6 +1,7 @@
 package clustoring;
 
 import java.util.*;
+import clustoring.Model;
 
 
 public class Posterior {
@@ -8,7 +9,7 @@ public class Posterior {
     // marginaling with k,l
     public List<List<Double>> semi_marginals1;
     // marginaling with m,n
-    public List<List<Double>> semi_margibals2;
+    public List<List<Double>> semi_marginals2;
 
     public Posterior(Model model) {
 	this.semi_marginals1 = new ArrayList<List<Double>>(model.node_N1);
@@ -26,12 +27,14 @@ public class Posterior {
 	this.update_model(model);
     }
 
-    public void updata_model(Model model) {
+    public void update_model(Model model) {
 	this.prepare_marginals(model);
-	this._update_model(model);
+	this.update_priors(model);
+	this.update_means(model);
+	this.update_variances(model);
     }
 
-    private void prepare_marginals(Mode model) {
+    private void prepare_marginals(Model model) {
 	List<Double> prob_sums;
 	double outer_sum, inner_sum;
 	for (int m = 0; m < model.node_N1; ++m) {
@@ -53,14 +56,14 @@ public class Posterior {
 	    for (int l = 0; l < model.c_N2; ++l) {
 		outer_sum = 0.0;
 		for (int m = 0; m < model.node_N1; ++m) {
-		    innter_sum = 0.0;
+		    inner_sum = 0.0;
 		    for (int n = 0; n < model.node_N2; ++n) {
-			prob = mode.calc_joint_prob(m, n, k, l) / this.semi_marginals1.get(m).get(n);
+			prob = model.calc_joint_prob(m, n, k, l) / this.semi_marginals1.get(m).get(n);
 			inner_sum += prob;
 		    }
 		    outer_sum += inner_sum;
 		}
-		this.semi_marginals2.get(k).set(l, oute_sum);
+		this.semi_marginals2.get(k).set(l, outer_sum);
 	    }
 	}
     }
@@ -71,14 +74,14 @@ public class Posterior {
 	for (int k = 0; k < model.node_N1; ++k) {
 	    sum = 0.0;
 	    for (int l = 0; l < model.node_N2; ++l) {
-		sum += this.marginals2.get(k).get(l);
+		sum += this.semi_marginals2.get(k).get(l);
 	    }
 	    model.priors1.set(k, sum * nmlz);
 	}
 	for (int l = 0; l < model.node_N2; ++l) {
 	    sum = 0.0;
 	    for (int k = 0; k < model.node_N1; ++k) {
-		sum += this.marginals2.get(k).get(l);
+		sum += this.semi_marginals2.get(k).get(l);
 	    }
 	    model.priors2.set(l, sum * nmlz);
 	}
@@ -91,14 +94,40 @@ public class Posterior {
 	    for (int l = 0; l < model.c_N2; ++l) {
 		outer_sum = 0.0;
 		for (int m = 0; m < model.node_N1; ++m) {
-		    innter_sum = 0.0;
+		    inner_sum = 0.0;
 		    for (int n = 0; n < model.node_N2; ++n) {
-			prob = 
+			prob = model.calc_joint_prob(m, n, k, l) / this.semi_marginal1.get(m).get(n);
+			inner_sum += prob * model.weights.get(m).get(n);
 		    }
+		    outer_sum += inner_sum;
 		}
+		model.means.get(k).set(l, outer_sum / this.semi_marginals2.get(k).get(l));
 	    }
 	}
     }
+
+    private void update_variances(Model model) {
+	double prob;
+	double diff;
+	double inner_sum, outer_sum;
+
+	for (int k = 0; k < model.c_N1; ++k) {
+	    for (int l = 0; l < model.c_N2; ++l) {
+		outer_sum = 0.0;
+		for (int m = 0; m < model.node_N1; ++m) {
+		    inner_sum = 0.0;
+		    for (int n = 0; n < model.node_N2; ++n) {
+			prob = model.calc_joint_Prob(m, n, k, l) / this.semi_marginal1.get(m).get(n);
+			diff = model.weights.get(m).get(n) - model.means.get(m).get(n);
+			inner_sum += prob * diff * diff;
+		    }
+		    outer_sum += inner_sum;
+		}
+		model.variances.get(k).set(l, outer_sum / this.marginals2.get(k).get(l));
+	    }
+	}
+    }
+			
 
     private double sum_List(List<Double> probs) {
 	int upper = probs.size();

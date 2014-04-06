@@ -1,11 +1,14 @@
 package clustoring;
 
 import java.util.*;
+import clustoring.Model;
+import clustoring.Posterior;
+
 
 
 public class Training {
 
-    public static Model train(List<List<Integer> weights, int c_N1, int c_N2) {
+    public static Model train(List<List<Double>> weights, int c_N1, int c_N2) {
 	Model model = new Model(weights,
 				weights.size(), weights.get(0).size(), c_N1, c_N2);
 	Posterior poster = new Posterior(model);
