@@ -12,12 +12,12 @@ public class Restaurant {
     public Restaurant() {
 	this.total_customer_n = 0;
 	this.total_table_n    = 0;
-	this.tables = new HashMap<String, List<Integer>>;
+	this.tables = new HashMap<String, List<Integer>>(1000);
     }
 
     public void add_new_table(String dish, int customer_n) {
 	if (!this.tables.containsKey(dish)) {
-	    List<Integer> _tables = new LinkedList<Integer>;
+	    List<Integer> _tables = new LinkedList<Integer>();
 	    this.tables.put(dish, _tables);
 	    this.total_table_n += 1;
 	}
@@ -31,7 +31,7 @@ public class Restaurant {
     */
     public void add_new_customer(String customers_dish, int customer_n) {
 	if (!this.tables.containsKey(dish)) {
-	    List<Integer> _tables = new LinkedList<Integer>;
+	    List<Integer> _tables = new LinkedList<Integer>();
 	    this.tables.put(dish, _tables);
 	    this.total_table_n += 1;
 	}

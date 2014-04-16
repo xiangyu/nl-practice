@@ -4,6 +4,7 @@ import java.util.*;
 
 
 public class Restaurant_Franchise {
+
     public Restaurant zerogram_restaurant;
     public Map<String, Restaurant> unigram_restaurants;
     public Map<Bigram, Restaurant> bigram_restaurants;
@@ -39,8 +40,40 @@ public class Restaurant_Franchise {
 	    }
 	}
     }
+    // Each sentence in sentences already contains BOS and EOS.
+    public void gibbs_sampling(List<List<String>> sentences, int gibbs_sup) {
+	int rest_gibbs = gibbs_sup;
+	while (rest_gibbs > 0) {
+	    rest_gibbs = _gibbs_sampling(sentences, rest_gibbs);
+	}
+    }
 
-    void gibbs_sampling(List<List<String>> sentences, int gibbs_n) {
+    private int _gibbs_sampling(List<List<String>> sentences, int gibbs_sup) {
+	int gibbs_n = 0;
+	Bigram bigram;
+	String current_word;
+	for (List<String> sentence : sentences) {
+	    int upper = sentence.size() - 2;
+	    for (int i = 0; i < upper; ++i) {
+		bigram.first  = sentence.get(i);
+		bigram.second = sentence.get(i + 1);
+		current_word  = sentence.get(i + 2);
+		this.remove(bigram, current_word);
+		this.add(bigram, current_word);
+	    }
+	    gibbs_n += upper;
+	    if (gibbs_n > gibbs_sup) {
+		return gibbs_sup - gibbs_n;
+	    }
+	}
+
+	return gibbs_sup - gibbs_n;
+    }
+
+    private void add(Bigram context, String current_word) {
+    }
+
+    private void remove(Bigram context, String current_word) {
     }
 }
 
