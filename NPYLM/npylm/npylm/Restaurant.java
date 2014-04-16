@@ -4,57 +4,56 @@ import java.util.*;
 
 
 public class Restaurant {
-    public static double[] param_d = {0.2, 0.2, 0.2};
-    public static double[] param_theta = {0.2, 0.2, 0.2};
 
     public int total_customer_n;
-    public List<Table> tables;
+    public int total_table_n;
+    public Map<String, List<Integer>> tables;
 
     public Restaurant() {
 	this.total_customer_n = 0;
-	this.tables = new LinkedList<Table>();
+	this.total_table_n    = 0;
+	this.tables = new HashMap<String, List<Integer>>;
     }
 
     public void add_new_table(String dish, int customer_n) {
-	Table table = new Table(customer_n, dish);
-	tables.add(table);
+	if (!this.tables.containsKey(dish)) {
+	    List<Integer> _tables = new LinkedList<Integer>;
+	    this.tables.put(dish, _tables);
+	    this.total_table_n += 1;
+	}
+	this.tables.get(dish).add(customer_n);
 	this.total_customer_n += customer_n;
     }
+
     /*
       add new customer. If same dish is already searved, we make her sit there.
       Else we make her sit new table.
     */
+    public void add_new_customer(String customers_dish, int customer_n) {
+	if (!this.tables.containsKey(dish)) {
+	    List<Integer> _tables = new LinkedList<Integer>;
+	    this.tables.put(dish, _tables);
+	    this.total_table_n += 1;
+	}
+	this.tables.get(dish).add(customer_n);
+	this.total_customer_n += customer_n;
+    }
     public void add_new_customer(String customers_dish) {
-	this.total_customer_n += 1;
-	for (Table table : this.tables) {
-	    if (table.dish.equals(customers_dish)) {
-		table.customer_n++;
-		return;
-	    }
-	}
-	Table table = new Table(1, customers_dish);
-	tables.add(table);
+	this.add_new_customer(customers_dish, 1);
     }
 
-
-    // return talbe's customer number for all dish which is served.
-    public Map<String, List<Integer>> get_customer_list() {
-	Map<String, List<Integer>> customer_list = new HashMap<String, List<Integer>>();
-
-	for (Table table : this.tables) {
-	    String dish = table.dish;
-	    if (customer_list.containsKey(dish)) {
-		customer_list.get(dish).add(table.customer_n);
-	    } else {
-		List<Integer> list = new ArrayList<Integer>(100);
-		list.add(table.customer_n);
-		customer_list.put(dish, list);
-	    }
+    public int customer_n_for_dish(String dish) {
+	if (!this.tables.containsKey(dish)) {
+	    return 0;
 	}
-
-	return customer_list;
+	List<Integer> dish_tables = this.tables.get(dish);
+	int total = 0;
+	for (Integer c_n : dish_tables) {
+	    total += c_n;
+	}
+	return total;
     }
-
+	    
     /*
       For gibbs sampling.
       return true if new customer sits in new table

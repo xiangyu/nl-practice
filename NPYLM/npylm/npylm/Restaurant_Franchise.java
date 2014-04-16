@@ -32,10 +32,15 @@ public class Restaurant_Franchise {
 	this.zerogram_restaurant = new Restaurant();
 	for (Map.Entry<String, Restaurant> s_map : this.unigram_restaurants.entrySet()) {
 	    Restaurant unigram_restaurant = s_map.getValue();
-	    for (Table table : unigram_restaurant.tables) {
-		this.zerogram_restaurant.add_new_customer(table.dish);
+	    for (Map.Entry<String, List<Integer>> dish_table : unigram_restaurant.tables.entrySet()) {
+		String dish = dish_table.getKey();
+		int customer_n = unigram_restaurant.cutomer_n_for_dish(dish);
+		this.zerogram_restaurant.add_new_customer(dish, customer_n);
 	    }
 	}
+    }
+
+    void gibbs_sampling(List<List<String>> sentences, int gibbs_n) {
     }
 }
 
