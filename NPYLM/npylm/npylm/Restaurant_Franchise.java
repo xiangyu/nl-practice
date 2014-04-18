@@ -67,12 +67,13 @@ public class Restaurant_Franchise {
 		this.remove(bigram, current_word);
 		this.add(bigram, current_word);
 	    }
+	    //System.out.println(this.log_like());
 	    gibbs_n += upper;
 	    if (gibbs_n > gibbs_sup) {
 		return gibbs_sup - gibbs_n;
 	    }
 	}
-
+	System.out.println(this.log_like());
 	return gibbs_sup - gibbs_n;
     }
 
@@ -171,11 +172,18 @@ public class Restaurant_Franchise {
     public double log_like() {
 	double _log_like = 0.0;
 
+	double d;
 	for (Map.Entry<Bigram, Restaurant> b_r : this.bigram_restaurants.entrySet()) {
-	    _log_like += b_r.getValue().log_like(this.discount, this.strength);
+	    d = b_r.getValue().log_like(this.discount, this.strength);
+	    //System.out.println("log_like " + d + ", " + "table " + b_r.getValue().total_table_n + ", " + "customer " + b_r.getValue().total_customer_n);
+	    _log_like += d;
+	    //_log_like += b_r.getValue().log_like(this.discount, this.strength);
 	}
 	for (Map.Entry<String, Restaurant> s_r : this.unigram_restaurants.entrySet()) {
-	    _log_like += s_r.getValue().log_like(this.discount, this.strength);
+	    d = s_r.getValue().log_like(this.discount, this.strength);
+	    //System.out.println("log_like " + d + ", " + "table " + s_r.getValue().total_table_n + ", " + "customer " + s_r.getValue().total_customer_n);
+	    _log_like += d;
+	    //p_log_like += s_r.getValue().log_like(this.discount, this.strength);
 	}
 	_log_like += this.zerogram_restaurant.log_like(this.discount, this.strength);
 

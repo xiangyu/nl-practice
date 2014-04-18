@@ -22,14 +22,14 @@ public class Restaurant {
 	if (!this.tables.containsKey(dish)) {
 	    List<Integer> _tables = new LinkedList<Integer>();
 	    this.tables.put(dish, _tables);
-	    this.total_table_n += 1;
 	}
 	this.tables.get(dish).add(customer_n);
 	this.total_customer_n += customer_n;
+	this.total_table_n += 1;
     }
 
     /*
-      add new customer. If same dish is already searved, we make her sit there.
+      If same dish is already searved, we make her sit there.
       Else we make her sit new table.
     */
     public void add_new_customer(String customers_dish, int customer_n) {
@@ -97,23 +97,23 @@ public class Restaurant {
 	for (int i = 0; i < remove_index; ++i) {
 	    it.next();
 	}
-	if (it.next() == 1) {
+	int c_n = it.next();
+	if (c_n == 1) {
 	    it.remove();
 	    this.total_table_n -= 1;
 	    this.total_customer_n -= 1;
 	    return true;
+	} else {
+	    it.set(c_n - 1);
+	    this.total_customer_n -= 1;
+	    return false;
 	}
-
-	it.set(it.next() - 1);
-	this.total_customer_n -= 1;
-	return false;
     }
 
     public double log_like(double discount, double strength) {
 	double new_term, occ_term;
 
-	new_term = this.log_factorial(strength, discount, this.total_table_n) -
-	    this.log_factorial(strength, this.total_customer_n, 1);
+	new_term = this.log_factorial(strength, discount, this.total_table_n) - this.log_factorial(strength, 1.0, this.total_customer_n);
 
 	occ_term = 0.0;
 	for (Map.Entry<String, List<Integer>> s_l : this.tables.entrySet()) {
@@ -127,7 +127,7 @@ public class Restaurant {
 
     private double log_factorial(double a, double b, int c) {
 	if (c <= 0) {
-	    return 1.0;
+	    return 0.0;
 	}
 
 	return c * Math.log(b) + Gamma.logGamma(a / b + c) - Gamma.logGamma(a / b);
