@@ -67,13 +67,13 @@ public class Restaurant_Franchise {
 		this.remove(bigram, current_word);
 		this.add(bigram, current_word);
 	    }
-	    //System.out.println(this.log_like());
+	    System.out.println(this.log_like());
 	    gibbs_n += upper;
 	    if (gibbs_n > gibbs_sup) {
 		return gibbs_sup - gibbs_n;
 	    }
 	}
-	System.out.println(this.log_like());
+	//System.out.println(this.log_like());
 	return gibbs_sup - gibbs_n;
     }
 
