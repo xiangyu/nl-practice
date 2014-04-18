@@ -20,11 +20,6 @@ public class NPYLM {
 	sentences.add(s2);
 	sentences.add(s3);
 	sentences.add(s4);
-	Model model = t.train(sentences);
-	model.print_model();
-
-	double p = model.calc_sentence_log_prob(s1);
-	System.out.println(0.4);
-	System.out.println(p);
+	t.train(sentences);
     }
 }

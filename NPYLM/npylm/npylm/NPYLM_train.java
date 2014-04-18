@@ -1,7 +1,8 @@
 package npylm;
 
 import java.util.*;
-import npylm.Model;
+//import npylm.Model;
+import npylm.Base_distribution;
 
 
 public class NPYLM_train {
@@ -13,13 +14,14 @@ public class NPYLM_train {
     private static String EOS1 = "##<EOS1>##";
     private static String EOS2 = "##<EOS2>##";
 
-    public Model train(List<List<String>> sentences) {
+    public void train(List<List<String>> sentences) {
 	List<List<String>> converted_sentences = this.convert_sentences(sentences);
 	Map<Bigram, Map<String, Integer>> counter = this.count_trigram(converted_sentences);
-	Restaurant_Franchise rf = new Restaurant_Franchise(counter);
-	Model model = new Model(rf);
+	Base_distribution base_dist = new Base_distribution();
+	Restaurant_Franchise rf = new Restaurant_Franchise(base_dist, counter);
+	//Model model = new Model(rf);
 
-	return model;
+	//return model;
     }
 
     public Map<Bigram, Map<String, Integer>>
@@ -67,7 +69,7 @@ public class NPYLM_train {
 	for (List<String> c_sentence : c_sentences) {
 	    for (int i = 0, upper = c_sentence.size() - 2; i < upper; ++i) {
 		Bigram bigram = new Bigram(c_sentence.get(i), c_sentence.get(i + 1));
-		word = sentence_cp.get(i + 2);
+		word = c_sentence.get(i + 2);
 		if (!counter.containsKey(bigram)) {
 		    local_counter = new HashMap<String, Integer>();
 		    counter.put(bigram, local_counter);
