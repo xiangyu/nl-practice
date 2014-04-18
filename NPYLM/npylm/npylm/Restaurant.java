@@ -129,7 +129,7 @@ public class Restaurant {
 	if (c <= 0) {
 	    return 1.0;
 	}
-	
+
 	return c * Math.log(b) + Gamma.logGamma(a / b + c) - Gamma.logGamma(a / b);
     }
 
@@ -152,4 +152,5 @@ public class Restaurant {
 	}
 
 	return probs.size() - 1;
+    }
 }

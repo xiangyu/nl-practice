@@ -56,7 +56,7 @@ public class Restaurant_Franchise {
 
     private int _gibbs_sampling(List<List<String>> sentences, int gibbs_sup) {
 	int gibbs_n = 0;
-	Bigram bigram;
+	Bigram bigram = new Bigram();
 	String current_word;
 	for (List<String> sentence : sentences) {
 	    int upper = sentence.size() - 2;

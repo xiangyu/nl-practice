@@ -4,6 +4,8 @@ public class Bigram {
     public String first;
     public String second;
 
+    Bigram() {}
+
     Bigram(String first, String second) {
 	this.first  = first;
 	this.second = second;
