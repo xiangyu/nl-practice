@@ -73,7 +73,6 @@ public class Restaurant_Franchise {
 		return gibbs_sup - gibbs_n;
 	    }
 	}
-	//System.out.println(this.log_like());
 	return gibbs_sup - gibbs_n;
     }
 
@@ -83,22 +82,25 @@ public class Restaurant_Franchise {
 	double new_prob;
 
 	restaurant = this.bigram_restaurants.get(context);
-	new_prob = this.prob(context.second, current_word);
+	new_prob = (this.strength + this.discount * restaurant.total_table_n) *
+	    this.prob(context.second, current_word);
 	is_recurve = restaurant.add(current_word, this.discount, new_prob);
 	if (!is_recurve) {
 	    return;
 	}
 
 	restaurant = this.unigram_restaurants.get(context.second);
-	new_prob = this.prob(current_word);
+	new_prob = (this.strength + this.discount * restaurant.total_table_n) *
+	    this.prob(current_word);
 	is_recurve = restaurant.add(current_word, this.discount, new_prob);
 	if (!is_recurve) {
 	    return;
 	}
 
 	restaurant = this.zerogram_restaurant;
-	new_prob = this.base_dist.get(current_word);
-	is_recurve = restaurant.add(current_word, this.discount, new_prob);
+	new_prob = (this.strength + this.discount * restaurant.total_table_n) *
+	    this.base_dist.get(current_word);
+	restaurant.add(current_word, this.discount, new_prob);
     }
 
     private void remove(Bigram context, String current_word) {
@@ -118,72 +120,57 @@ public class Restaurant_Franchise {
 	}
 
 	restaurant = this.zerogram_restaurant;
-	is_recurve = restaurant.remove(current_word);
+	restaurant.remove(current_word);
     }
 
     public double prob(Bigram context, String current_word) {
 	Restaurant restaurant = this.bigram_restaurants.get(context);
-	double first, second;
-	int dish_table_n;
-	if (!restaurant.tables.containsKey(current_word)) {
-	    dish_table_n = 0;
-	} else {
-	    dish_table_n = restaurant.tables.get(current_word).size();
-	}
-	first = (restaurant.customer_n_for_dish(current_word) - this.discount * dish_table_n) / (this.strength + restaurant.total_customer_n);
-	second = (this.strength + this.discount * restaurant.total_table_n) / (this.strength + restaurant.total_customer_n);
-	second *= this.prob(context.second, current_word);
+	double first  = this.prob_first(restaurant, current_word);
+	double second = this.prob_second(restaurant);
 
-	return first + second;
+	return first + second * this.prob(context.second, current_word);
     }
 
     public double prob(String context, String current_word) {
 	Restaurant restaurant = this.unigram_restaurants.get(context);
-	double first, second;
-	int dish_table_n;
-	if (!restaurant.tables.containsKey(current_word)) {
-	    dish_table_n = 0;
-	} else {
-	    dish_table_n = restaurant.tables.get(current_word).size();
-	}
-	first = (restaurant.customer_n_for_dish(current_word) - this.discount * dish_table_n) / (this.strength + restaurant.total_customer_n);
-	second = (this.strength + this.discount * restaurant.total_table_n) / (this.strength + restaurant.total_customer_n);
-	second *= this.prob(current_word);
+	double first  = this.prob_first(restaurant, current_word);
+	double second = this.prob_second(restaurant);
 
-	return first + second;
+	return first + second * this.prob(current_word);
     }
 
     public double prob(String current_word) {
 	Restaurant restaurant = this.zerogram_restaurant;
-	double first, second;
+	double first  = this.prob_first(restaurant, current_word);
+	double second = this.prob_second(restaurant);
+
+	return first + second * base_dist.get(current_word);
+    }
+
+    private double prob_first(Restaurant restaurant, String current_word) {
 	int dish_table_n;
 	if (!restaurant.tables.containsKey(current_word)) {
 	    dish_table_n = 0;
 	} else {
 	    dish_table_n = restaurant.tables.get(current_word).size();
 	}
-	first = (restaurant.customer_n_for_dish(current_word) - this.discount * dish_table_n) / (this.strength + restaurant.total_customer_n);
-	second = (this.strength + this.discount * restaurant.total_table_n) / (this.strength + restaurant.total_customer_n);
-	second *= this.base_dist.get(current_word);
+	double first = (restaurant.customer_n_for_dish(current_word) - this.discount * dish_table_n) / (this.strength + restaurant.total_customer_n);
 
-	return first + second;
+	return first;
+    }
+
+    private double prob_second(Restaurant restaurant) {
+	return (this.strength + this.discount * restaurant.total_table_n) / (this.strength + restaurant.total_customer_n);
     }
 
     public double log_like() {
 	double _log_like = 0.0;
 
-	double d;
 	for (Map.Entry<Bigram, Restaurant> b_r : this.bigram_restaurants.entrySet()) {
-	    d = b_r.getValue().log_like(this.discount, this.strength);
-	    //System.out.println("log_like " + d + ", " + "table " + b_r.getValue().total_table_n + ", " + "customer " + b_r.getValue().total_customer_n);
-	    _log_like += d;
-	    //_log_like += b_r.getValue().log_like(this.discount, this.strength);
+	    _log_like += b_r.getValue().log_like(this.discount, this.strength);
 	}
 	for (Map.Entry<String, Restaurant> s_r : this.unigram_restaurants.entrySet()) {
-	    d = s_r.getValue().log_like(this.discount, this.strength);
-	    //System.out.println("log_like " + d + ", " + "table " + s_r.getValue().total_table_n + ", " + "customer " + s_r.getValue().total_customer_n);
-	    _log_like += d;
-	    //p_log_like += s_r.getValue().log_like(this.discount, this.strength);
+	    _log_like += s_r.getValue().log_like(this.discount, this.strength);
 	}
 	_log_like += this.zerogram_restaurant.log_like(this.discount, this.strength);
 
