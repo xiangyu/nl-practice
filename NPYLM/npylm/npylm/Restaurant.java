@@ -110,6 +110,31 @@ public class Restaurant {
 	}
     }
 
+    public boolean add_zero_restaurant2(String customers_dish, double discount, double new_prob) {
+	List<Integer> tables_for_dish = this.tables.get(customers_dish);
+	List<Double> probs = new ArrayList<Double>();
+	for (Integer c_n : tables_for_dish) {
+	    probs.add(c_n - discount);
+	}
+	probs.add(new_prob);
+
+	int add_index = this.sample(probs);
+	if (add_index == probs.size() - 1) {
+	    tables_for_dish.add(1);
+	    this.total_table_n += 1;
+	    this.total_customer_n += 1;
+	    return true;
+	}
+
+	ListIterator<Integer> it = tables_for_dish.listIterator();
+	for (int i = 0; i < add_index; ++i) {
+	    it.next();
+	}
+	it.set(it.next() + 1);
+	this.total_customer_n += 1;
+	return false;
+    }
+
     public double log_like(double discount, double strength) {
 	double new_term, occ_term;
 
@@ -142,15 +167,25 @@ public class Restaurant {
 	double rand = this.rand_gen.nextDouble() * total;
 	int i = 0;
 	double  accm = 0.0;
-	for (Double p : probs) {
-	    if (p < rand) {
+	for (Double p :probs) {
+	    accm += p;
+	    if (rand < accm) {
 		return i;
 	    } else {
-		accm += p;
 		i += 1;
 	    }
 	}
 
 	return probs.size() - 1;
+    }
+
+    public void print() {
+	for (Map.Entry<String, List<Integer>> b_l : this.tables.entrySet()) {
+	    System.out.print(b_l.getKey() + ":\t");
+	    for (Integer i : b_l.getValue()) {
+		System.out.print(" " + i);
+	    }
+	    System.out.println("");
+	}
     }
 }

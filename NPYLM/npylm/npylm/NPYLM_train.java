@@ -20,8 +20,7 @@ public class NPYLM_train {
 	Map<Bigram, Map<String, Integer>> counter = this.count_trigram(converted_sentences);
 	Base_distribution base_dist = new Base_distribution();
 	Restaurant_Franchise rf = new Restaurant_Franchise(base_dist, counter);
-	rf.gibbs_sampling(converted_sentences, 50000);
-	double d = rf.log_like();
+	rf.gibbs_sampling(converted_sentences, 1000000);
 	//Model model = new Model(rf);
 
 	//return model;
