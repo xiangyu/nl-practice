@@ -55,10 +55,12 @@ public class Restaurant_Franchise {
     }
 
     private int _gibbs_sampling(List<List<String>> sentences, int gibbs_sup) {
+	int turn = 0;
 	int gibbs_n = 0;
 	Bigram bigram = new Bigram();
 	String current_word;
 	for (List<String> sentence : sentences) {
+	    turn++;
 	    int upper = sentence.size() - 2;
 	    for (int i = 0; i < upper; ++i) {
 		bigram.first  = sentence.get(i);
@@ -67,7 +69,10 @@ public class Restaurant_Franchise {
 		this.remove(bigram, current_word);
 		this.add(bigram, current_word);
 	    }
-	    System.out.println(this.log_like());
+	    if (turn > 200) {
+		System.out.println(this.log_like());
+		turn = 0;
+	    }
 	    gibbs_n += upper;
 	    if (gibbs_n > gibbs_sup) {
 		return gibbs_sup - gibbs_n;
