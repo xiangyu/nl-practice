@@ -69,7 +69,7 @@ public class Restaurant_Franchise {
 		this.remove(bigram, current_word);
 		this.add(bigram, current_word);
 	    }
-	    if (turn > 600) {
+	    if (turn > 1000) {
 		System.out.println(this.log_like());
 		turn = 0;
 	    }
