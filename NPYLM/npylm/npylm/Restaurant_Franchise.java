@@ -47,20 +47,16 @@ public class Restaurant_Franchise {
     }
 
     // Each sentence in sentences already contains BOS and EOS.
-    public void gibbs_sampling(List<List<String>> sentences, int gibbs_sup) {
-	int rest_gibbs = gibbs_sup;
-	while (rest_gibbs > 0) {
-	    rest_gibbs = _gibbs_sampling(sentences, rest_gibbs);
+    public void gibbs_sampling(List<List<String>> sentences, int iter_num) {
+	for (int i = 0; i < iter_num; ++i) {
+	    _gibbs_sampling(sentences);
 	}
     }
 
-    private int _gibbs_sampling(List<List<String>> sentences, int gibbs_sup) {
-	int turn = 0;
-	int gibbs_n = 0;
+    private void _gibbs_sampling(List<List<String>> sentences) {
 	Bigram bigram = new Bigram();
 	String current_word;
 	for (List<String> sentence : sentences) {
-	    turn++;
 	    int upper = sentence.size() - 2;
 	    for (int i = 0; i < upper; ++i) {
 		bigram.first  = sentence.get(i);
@@ -69,16 +65,8 @@ public class Restaurant_Franchise {
 		this.remove(bigram, current_word);
 		this.add(bigram, current_word);
 	    }
-	    if (turn > 1000) {
-		System.out.println(this.log_like());
-		turn = 0;
-	    }
-	    gibbs_n += upper;
-	    if (gibbs_n > gibbs_sup) {
-		return gibbs_sup - gibbs_n;
-	    }
 	}
-	return gibbs_sup - gibbs_n;
+	System.out.println(this.log_like());
     }
 
     private void add(Bigram context, String current_word) {
