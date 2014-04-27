@@ -7,8 +7,6 @@ import npylm.Restaurant_Franchise;
 
 
 public class NPYLM_train {
-    //private static double[] param_d = {0.2, 0.2, 0.2};
-    //private static double[] param_theta = {0.2, 0.2, 0.2};
 
     private static String BOS2 = "##<BOS2>##";
     private static String BOS1 = "##<BOS1>##";
@@ -19,8 +17,9 @@ public class NPYLM_train {
 	List<List<String>> converted_sentences = this.convert_sentences(sentences);
 	Map<Bigram, Map<String, Integer>> counter = this.count_trigram(converted_sentences);
 	Base_distribution base_dist = new Base_distribution();
-	Restaurant_Franchise rf = new Restaurant_Franchise(base_dist, counter);
-	rf.gibbs_sampling(converted_sentences, 1000);// 1000 * 1000 * 500
+	Restaurant_Franchise rf = new Restaurant_Franchise(base_dist, counter, 0.4, 0.2);
+	//rf.gibbs_sampling(converted_sentences, 100);
+	rf.gibbs_sampling_with_hyper(converted_sentences, 100);
 	//Model model = new Model(rf);
 
 	//return model;

@@ -6,7 +6,7 @@ import org.apache.commons.math3.special.Gamma;
 
 public class Restaurant {
 
-    private static Random rand_gen = new Random();
+    private static Random rand_gen = new Random(0);
 
     public int total_customer_n;
     public int total_table_n;
