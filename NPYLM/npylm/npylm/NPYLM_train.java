@@ -13,16 +13,17 @@ public class NPYLM_train {
     private static String EOS1 = "##<EOS1>##";
     private static String EOS2 = "##<EOS2>##";
 
-    public void train(List<List<String>> sentences) {
+    public void train(List<List<String>> sentences, String flag) {
 	List<List<String>> converted_sentences = this.convert_sentences(sentences);
 	Map<Bigram, Map<String, Integer>> counter = this.count_trigram(converted_sentences);
 	Base_distribution base_dist = new Base_distribution();
 	Restaurant_Franchise rf = new Restaurant_Franchise(base_dist, counter, 0.4, 0.2);
-	//rf.gibbs_sampling(converted_sentences, 100);
-	rf.gibbs_sampling_with_hyper(converted_sentences, 100);
-	//Model model = new Model(rf);
-
-	//return model;
+	if (!flag.equals("yes")) {
+	    rf.gibbs_sampling(converted_sentences, 2000);
+	} else {
+	    rf.gibbs_sampling_with_hyper(converted_sentences, 2000);
+	}
+	//Model model = new Model(rf); return model;
     }
 
     public Map<Bigram, Map<String, Integer>>

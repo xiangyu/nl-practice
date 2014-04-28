@@ -110,7 +110,9 @@ public class Restaurant_Franchise {
     public void gibbs_sampling_with_hyper(List<List<String>> sentences, int iter_num) {
 	for (int i = 0; i < iter_num; ++i) {
 	    this._gibbs_sampling(sentences);
-	    this.update_hyper();
+	    if (i % 10 == 0) {
+		this.update_hyper();
+	    }
 	    System.out.println(this.log_like());
 	}
     }
@@ -180,24 +182,18 @@ public class Restaurant_Franchise {
     private void update_hyper() {
 	double next_discount, next_strength;
 
-	//System.out.println("a");
 	next_discount = this.s_sampler.next_discount(2, this.bi_discount, this);
 	this.bi_discount = next_discount;
-	//System.out.println("b");
 	next_strength = this.s_sampler.next_strength(2, this.bi_strength, this);
 	this.bi_strength = next_strength;
 
-	//System.out.println("c");
 	next_discount = this.s_sampler.next_discount(1, this.uni_discount, this);
 	this.uni_discount = next_discount;
-	//System.out.println("d");
 	next_strength = this.s_sampler.next_strength(1, this.uni_strength, this);
 	this.uni_strength = next_strength;
 
-	//System.out.println("e");
 	next_discount = this.s_sampler.next_discount(0, this.zero_discount, this);
 	this.zero_discount = next_discount;
-	//System.out.println("f");
 	next_strength = this.s_sampler.next_strength(0, this.zero_strength, this);
 	this.zero_strength = next_strength;
     }
@@ -282,5 +278,15 @@ public class Restaurant_Franchise {
 	}
 
 	return _log_like;
+    }
+
+    public void print_hyper() {
+	System.out.println("bi_discount:   " + this.bi_discount);
+	System.out.println("uni_discount:  " + this.uni_discount);
+	System.out.println("zero_discount: " + this.zero_discount);
+
+	System.out.println("bi_strength:   " + this.bi_strength);
+	System.out.println("uni_strength:  " + this.uni_strength);
+	System.out.println("zero_strength: " + this.zero_strength);
     }
 }

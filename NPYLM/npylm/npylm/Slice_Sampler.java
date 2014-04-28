@@ -32,14 +32,7 @@ public class Slice_Sampler {
     public double next_discount(int i, double x0, Restaurant_Franchise rf) {
 	double log_y = rf.log_like() + Math.log(this.beta_dist.density(x0)) + Math.log(rand_gen.nextDouble() + 1e-100);
 	this.find_range_for_discount(i, x0, log_y, rf);
-	/*
-	System.out.println("log_y: " + log_y);
-	System.out.println("x: " + x0);
-	System.out.println("log_l: " + this.log_f_for_discount(i, this.xl, rf));
-	System.out.println("l: " + this.xl);
-	System.out.println("log_r: " + this.log_f_for_discount(i, this.xr, rf));
-	System.out.println("r: " + this.xr);
-	*/
+
 	double x = this.shrink_for_discount(i, x0, log_y, rf);
 	if (x > this.max_discount) {
 	    return this.max_discount;
